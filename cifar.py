@@ -5,31 +5,71 @@
 # @File     : cifar.py
 # @Project  : lab
 
-import numpy as np
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.backends.cudnn as cudnn
-
-import torchvision
-import torchvision.transforms as T
-
-from matplotlib import pyplot as plt
-
-import os
 import argparse
-import random
+import os
+
+import torch
 import yaml
+
 import model
 import utils
 
 
-def train(epoch):
-    pass
+def train(net, train_loader, train_batch_size, device, criterion, optimizer):
+    net.train()
+    train_loss, correct, total, batch_idx = 0, 0, 0, 0
+    for batch_idx, (inputs, targets) in enumerate(train_loader):
+        inputs, targets = inputs.to(device), targets.to(device)
+        optimizer.zero_grad()
+        outputs = net(inputs)
+        loss = criterion(outputs, targets)
+        loss.backward()
+        optimizer.step()
+
+        train_loss += loss.item()
+        predicted = outputs.max(1)[1]
+        total += targets.size(0)
+        correct += predicted.eq(targets).sum().item()
+
+    epoch_loss = train_loss / ((batch_idx + 1) * train_batch_size)
+    epoch_acc = 100.0 * correct / total
+
+    return epoch_loss, epoch_acc
 
 
-def test(epoch):
-    pass
+def test(net, test_loader, test_batch_size, device, criterion, epoch):
+    global best_acc
+    net.eval()
+    test_loss, correct, total = 0, 0, 0
+    with torch.no_grad():
+        for batch_idx, (inputs, targets) in enumerate(test_loader):
+            inputs, targets = inputs.to(device), targets.to(device)
+            outputs = net(inputs)
+            loss = criterion(outputs, targets)
+
+            test_loss += loss.item()
+            predicted = outputs.max(1)[1]
+            total += targets.size(0)
+            correct += predicted.eq(targets).sum().item()
+
+    epoch_loss = test_loss / ((batch_idx + 1) * test_batch_size)
+    epoch_acc = 100.0 * correct / total
+
+    # Save checkpoint
+    if epoch_acc > best_acc:
+        state = {
+            'net': net.state_dict(),
+            'acc': epoch_acc,
+            'epoch': epoch,
+        }
+        print('Saving...')
+        if not os.path.isdir('checkpoints'):
+            os.mkdir('checkpoints')
+        torch.save(state, f'./checkpoints/checkpoint_{args.model.lower()}.pth')
+        print('Saved...')
+        best_acc = epoch_acc
+
+    return epoch_loss, epoch_acc
 
 
 def main(config):
@@ -46,7 +86,21 @@ def main(config):
         best_acc, start_epoch = checkpoint['acc'], checkpoint['epoch']
     criterion = utils.loss()
     optimizer = utils.optimizer('SGD', net, args.lr, config['momentum'], config['weight_decay'])
-    scheduler = utils.scheduler('ReduceLROnPlateau', optimizer, mode='min', factor=0.5, patience=5, cooldown=5,)
+    scheduler = utils.scheduler('ReduceLROnPlateau', optimizer, mode='min', factor=0.5, patience=5, cooldown=5, )
+    train_loss, train_acc, test_loss, test_acc, lr_schedule = [], [], [], [], []
+    for epoch in range(start_epoch, max_epoch := start_epoch + args.epoch):
+        train_l, train_a = train(net, train_loader, args.batch_size, device, criterion, optimizer)
+        test_l, test_a = test(net, test_loader, config['test_batch_size'], device, criterion, epoch)
+        scheduler.step(test_l)
+
+        train_loss.append(train_l)
+        train_acc.append(train_a)
+        test_loss.append(test_l)
+        test_acc.append(test_a)
+        lr_schedule.append(lr := optimizer.param_groups[0]['lr'])
+
+        utils.log_info(epoch, max_epoch, train_l, train_a, test_l, test_a, best_acc, lr)
+        utils.plot_history(train_loss, train_acc, test_loss, test_acc, lr_schedule, args.model)
 
 
 if __name__ == '__main__':
