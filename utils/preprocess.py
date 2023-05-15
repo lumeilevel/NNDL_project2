@@ -13,13 +13,8 @@ import torch
 import torchvision
 import torchvision.transforms as T
 
-transform_test = T.Compose(
-    [T.ToTensor(), T.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))]
-)
-test_batch_size = 256
 
-
-def reproduce(seed=1):
+def reproduce(seed):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -29,36 +24,42 @@ def reproduce(seed=1):
     return 'cuda' if torch.cuda.is_available() else 'cpu'
 
 
-def get_data_loader(cutout, batch_size, num_workers=2):
+def get_data_loader(cutout, batch_size, config):
+    if isinstance(config['mean'], str) and isinstance(config['std'], str):
+        mean, std = eval(config['mean']), eval(config['std'])
+    else:
+        mean, std = config['mean'], config['std']
     if cutout:
-        # from .cutout import Cutout
-        # transform_train = T.Compose([
-        #     T.RandomCrop(32, padding=4),
-        #     T.RandomHorizontalFlip(),
-        #     T.ToTensor(),
-        #     Cutout(n_holes=1, length=16),
-        # ])
-        pass
+        from augmentation import Cutout
+        transform_train = T.Compose([
+            T.RandomCrop(config['size'], padding=config['padding']),
+            T.RandomHorizontalFlip(),
+            Cutout(config['p'], config['half_size']),
+            T.ToTensor(),
+            T.Normalize(mean, std),
+        ])
     else:
         transform_train = T.Compose(
             [
-                T.RandomCrop(32, padding=4),
+                T.RandomCrop(config['size'], padding=config['padding']),
                 T.RandomHorizontalFlip(),
                 T.ToTensor(),
-                T.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616)),
+                T.Normalize(mean, std),
             ]
         )
     train_set = torchvision.datasets.CIFAR10(
         root='./data', train=True, download=True, transform=transform_train
     )
     train_loader = torch.utils.data.DataLoader(
-        train_set, batch_size=batch_size, shuffle=True, num_workers=num_workers
+        train_set, batch_size=batch_size, shuffle=True, num_workers=config['num_workers']
     )
-
+    transform_test = T.Compose(
+        [T.ToTensor(), T.Normalize(mean, std)]
+    )
     test_set = torchvision.datasets.CIFAR10(
         root='./data', train=False, download=True, transform=transform_test
     )
     test_loader = torch.utils.data.DataLoader(
-        test_set, batch_size=test_batch_size, shuffle=False, num_workers=num_workers
+        test_set, batch_size=config['test_batch_size'], shuffle=False, num_workers=config['num_workers']
     )
     return train_loader, test_loader
