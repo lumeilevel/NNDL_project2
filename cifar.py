@@ -85,8 +85,8 @@ def main(config):
         net.load_state_dict(checkpoint['net'])
         best_acc, start_epoch = checkpoint['acc'], checkpoint['epoch']
     criterion = utils.loss()
-    optimizer = utils.optimizer('SGD', net, args.lr, config['momentum'], config['weight_decay'])
-    scheduler = utils.scheduler('ReduceLROnPlateau', optimizer, mode='min', factor=0.5, patience=5, cooldown=5, )
+    optimizer = utils.optimizer('SGD', net, args.lr, **config['optimizer'])
+    scheduler = utils.scheduler('ReduceLROnPlateau', optimizer, **config['scheduler'])
     train_loss, train_acc, test_loss, test_acc, lr_schedule = [], [], [], [], []
     for epoch in range(start_epoch, max_epoch := start_epoch + args.epoch):
         train_l, train_a = train(net, train_loader, args.batch_size, device, criterion, optimizer)
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Train a network on CIFAR-10 by PyTorch")
     parser.add_argument(
         '--model', '-m',
-        default='ResNet18',
+        default='resNet18',
         type=str,
         help="resNet18, resNet34, resNet50, resNet101, resNet152, resNeXt50_32x4d, resNeXt101_32x8d, "
              "wide_resNet50_2, wide_resNet101_2, PreActResNet18, ResNeXt29_32x4d, ResNeXt29_2x64d, \
