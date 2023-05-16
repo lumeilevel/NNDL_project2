@@ -33,14 +33,14 @@ def plot_history(train_loss, test_loss, train_accuracy, test_accuracy, lr_schedu
     plt.title('Learning Rate')
     plt.xlabel('Epoch')
 
-    if not os.path.isdir('../log'):
-        os.mkdir('../log')
-    plt.savefig(f'../log/{model_name.lower()}.png')
+    if not os.path.isdir('log'):
+        os.mkdir('log')
+    plt.savefig(f'./log/{model_name.lower()}.png')
     plt.show()
 
 
 def log_info(epoch, max_epoch, train_loss, train_acc, test_loss, test_acc, best_acc, lr):
-    print(line := "=" * 50)
+    print(line := "=" * 75)
     print(f"Epoch: {epoch + 1} / {max_epoch}")
     print(f"Learning Rate: {lr:.6f}")
     print(f"Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}%")

@@ -24,24 +24,26 @@ class BasicBlock(nn.Module):
 
     expansion = 1
 
-    def __init__(self, in_planes, planes, activation=F.relu, stride=1,
-                 downsample=None, groups=1, base_width=64, dilation=1, norm_layer=None):
+    def __init__(self, inplanes, planes, activation=F.relu, stride=1,
+                 groups=1, base_width=64, dilation=1, norm_layer=None):
         super(BasicBlock, self).__init__()
+        if norm_layer is None:
+            norm_layer = nn.BatchNorm2d
+        if groups != 1 or base_width != 64:
+            raise ValueError('BasicBlock only supports groups=1 and base_width=64')
+        if dilation > 1:
+            raise NotImplementedError("Dilation > 1 not supported in BasicBlock")
         self.activation = activation
-        self.conv1 = nn.Conv2d(
-            in_planes, planes, kernel_size=3, stride=stride, padding=1, bias=False
-        )
-        self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = nn.Conv2d(
-            planes, planes, kernel_size=3, stride=1, padding=1, bias=False
-        )
-        self.bn2 = nn.BatchNorm2d(planes)
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = norm_layer(planes)
+        self.conv2 = conv3x3(planes, planes, stride, groups, dilation)
+        self.bn2 = norm_layer(planes)
 
         self.shortcut = nn.Sequential()
-        if stride != 1 or in_planes != self.expansion * planes:
+        if stride != 1 or inplanes != self.expansion * planes:
             self.shortcut = nn.Sequential(
                 nn.Conv2d(
-                    in_planes,
+                    inplanes,
                     self.expansion * planes,
                     kernel_size=1,
                     stride=stride,
@@ -67,7 +69,7 @@ class Bottleneck(nn.Module):
 
     expansion = 4
 
-    def __init__(self, inplanes, planes, activation=F.relu, stride=1, downsample=None,
+    def __init__(self, inplanes, planes, activation=F.relu, stride=1,
                  groups=1, base_width=64, dilation=1, norm_layer=None):
         super(Bottleneck, self).__init__()
         if norm_layer is None:
@@ -81,29 +83,14 @@ class Bottleneck(nn.Module):
         self.conv3 = conv1x1(width, planes * self.expansion)
         self.bn3 = norm_layer(planes * self.expansion)
         self.activation = activation
-        self.downsample = downsample
         self.stride = stride
 
     def forward(self, x):
-        identity = x
-
-        out = self.conv1(x)
-        out = self.bn1(out)
+        out = self.activation(self.bn1(self.conv1(x)))
+        out = self.activation(self.bn2(self.conv2(out)))
+        out = self.bn3(self.conv3(out))
+        out += self.shortcut(x)
         out = self.activation(out)
-
-        out = self.conv2(out)
-        out = self.bn2(out)
-        out = self.activation(out)
-
-        out = self.conv3(out)
-        out = self.bn3(out)
-
-        if self.downsample is not None:
-            identity = self.downsample(x)
-
-        out += identity
-        out = self.activation(out)
-
         return out
 
 
@@ -148,8 +135,7 @@ class ResNet(nn.Module):
         strides = [stride] + [1] * (num_blocks - 1)
         layers = []
         for stride in strides:
-            layers.append(block(self.in_planes, planes, self.activation, stride, None,
-                                self.groups, self.base_width))
+            layers.append(block(self.in_planes, planes, self.activation, stride, self.groups, self.base_width))
             self.in_planes = planes * block.expansion
         return nn.Sequential(*layers)
 
