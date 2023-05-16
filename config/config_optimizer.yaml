@@ -2,7 +2,8 @@ seed: 1
 batch_size: 128
 test_batch_size: 256
 epoch: 50
-lr: 0.001
+lr: 0.1
+lr_adam: 0.001
 #hidden: 0
 #dropout: 0
 num_workers: 2
@@ -49,10 +50,21 @@ scheduler:
 #  - ship
 #  - truck
 
-losses:
-  - CrossEntropyLoss
-  - MSELoss
-  - BCEWithLogitsLoss
-  - HuberLoss
-  - SmoothL1Loss
-  - MultiLabelSoftMarginLoss
+#losses:
+#  - CrossEntropyLoss
+#  - MSELoss
+#  - BCEWithLogitsLoss
+#  - HuberLoss
+#  - SmoothL1Loss
+#  - MultiLabelSoftMarginLoss
+
+optimizers:
+    - Adam
+    - SGD
+    - RMSprop
+    - Adadelta
+    - Adagrad
+#    - Adamax
+    - ASGD
+#    - Rprop
+#    - LBFGS

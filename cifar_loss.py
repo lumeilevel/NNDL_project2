@@ -87,8 +87,8 @@ def main(config):
             test_acc[i].append(test_acc_i)
             schedulers[i].step(test_loss_i)
 
-        utils.log_info_losses(epoch, args.epoch, train_l, train_a, test_l, test_a, config['losses'])
-    utils.compare_losses(train_loss, test_loss, train_acc, test_acc, config['losses'])
+        utils.log_info_quota(epoch, args.epoch, train_l, train_a, test_l, test_a, config['losses'])
+    utils.compare_quota(train_loss, test_loss, train_acc, test_acc, losses=config['losses'])
 
 
 if __name__ == '__main__':
