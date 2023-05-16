@@ -5,6 +5,9 @@
 # @File     : runner.py
 # @Project  : lab
 
+import os
+
+import torch
 import torch.backends.cudnn as cudnn
 import torch.nn as nn
 import torch.optim as optim
@@ -20,15 +23,49 @@ def net(model_name, models, device):
     return net
 
 
+def baseline(models, device):
+    print(f"==========> Baseline Model ResNet18 selected. <==========")
+    net = getattr(models, 'resNet18')()
+    if device == 'cuda':
+        net = nn.DataParallel(net)
+        cudnn.benchmark = True
+        cudnn.deterministic = True
+    if not os.path.isdir('checkpoints'):
+        os.mkdir('checkpoints')
+    torch.save(net.state_dict(), './checkpoints/resnet18.pth')
+    return net
+
+
+def net_list(names, models, device):
+    nets = [models.resNet18() for _ in names]
+    if device == 'cuda':
+        nets = [nn.DataParallel(net) for net in nets]
+    for net in nets:
+        net.load_state_dict(torch.load('./checkpoints/resnet18.pth'))
+    return nets
+
+
 def loss(loss_name='CrossEntropyLoss'):
     loss = {
         'CrossEntropyLoss': nn.CrossEntropyLoss(),
         'MSELoss': nn.MSELoss(),
+        'BCELoss': nn.BCELoss(),
+        'HuberLoss': nn.HuberLoss(),
         'L1Loss': nn.L1Loss(),
         'SmoothL1Loss': nn.SmoothL1Loss(),
-        'BCELoss': nn.BCELoss(),
         'BCEWithLogitsLoss': nn.BCEWithLogitsLoss(),
-        'HuberLoss': nn.HuberLoss(),
+        'KLDivLoss': nn.KLDivLoss(),
+        'NLLLoss': nn.NLLLoss(),
+        'PoissonNLLLoss': nn.PoissonNLLLoss(),
+        'CosineEmbeddingLoss': nn.CosineEmbeddingLoss(),
+        'CTCLoss': nn.CTCLoss(),
+        'HingeEmbeddingLoss': nn.HingeEmbeddingLoss(),
+        'MarginRankingLoss': nn.MarginRankingLoss(),
+        'MultiLabelMarginLoss': nn.MultiLabelMarginLoss(),
+        'MultiLabelSoftMarginLoss': nn.MultiLabelSoftMarginLoss(),
+        'MultiMarginLoss': nn.MultiMarginLoss(),
+        'TripletMarginLoss': nn.TripletMarginLoss(),
+        'SoftMarginLoss': nn.SoftMarginLoss(),
     }
     print(f"==========> Loss {loss_name} selected. <==========")
     return loss[loss_name]
@@ -76,9 +113,9 @@ def scheduler(scheduler_name, optimizer, **kwargs):
         # T_max=5, eta_min=0.0001
         'CosineAnnealingLR': lrs.CosineAnnealingLR(optimizer, T_max=kwargs['T_max'], eta_min=kwargs['eta_min']),
         # base_lr=0.001, max_lr=0.1
-        'CyclicLR': lrs.CyclicLR(optimizer, max_lr=kwargs['max_lr'], base_lr=kwargs['base_lr']),
+        'CyclicLR': lrs.CyclicLR(optimizer, max_lr=kwargs['max_lr'], base_lr=kwargs['base_lr'], cycle_momentum=False),
         # max_lr=0.1, steps_per_epoch=10, epochs=10
-        'OneCycleLR': lrs.OneCycleLR(optimizer, max_lr=kwargs['max_lr'],
+        'OneCycleLR': lrs.OneCycleLR(optimizer, max_lr=kwargs['max_lr'], cycle_momentum=False,
                                      steps_per_epoch=kwargs['steps_per_epoch'], epochs=kwargs['epochs']),
         # T_0=10, T_mult=1
         'CosineAnnealingWarmRestarts': lrs.CosineAnnealingWarmRestarts(optimizer,

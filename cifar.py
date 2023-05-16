@@ -7,9 +7,11 @@
 
 import argparse
 import os
+
 import torch
 import yaml
 from tqdm import tqdm
+
 import model
 import utils
 
@@ -40,7 +42,7 @@ def test(net, test_loader, test_batch_size, device, criterion, epoch, best_acc):
     net.eval()
     test_loss, correct, total = 0, 0, 0
     with torch.no_grad():
-        for batch_idx, (inputs, targets) in tqdm(enumerate(test_loader), desc=f'Test Epoch {epoch + 1}\t'):
+        for batch_idx, (inputs, targets) in tqdm(enumerate(test_loader), desc=f'Test     Epoch {epoch + 1}\t'):
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = net(inputs)
             loss = criterion(outputs, targets)
