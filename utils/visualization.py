@@ -37,27 +37,10 @@ def plot_history(train_loss, test_loss, train_accuracy, test_accuracy, lr_schedu
         os.mkdir('log')
     plt.savefig(f'./log/{model_name.lower()}.png')
     plt.show()
+    plt.close()
 
 
-def compare_losses(train_loss, test_loss, train_accuracy, test_accuracy, losses, figsize=(16, 8), row=2, col=2):
-    plt.figure(figsize=figsize)
-    axisY = [train_loss, test_loss, train_accuracy, test_accuracy]
-    labelY = [ds + la for la in ('Loss', 'Accuracy') for ds in ('Train', 'Test')]
-    for idx in range(row * col):
-        plt.subplot(row, col, idx + 1)
-        for loss, y in zip(losses, axisY[idx]):
-            plt.plot(y, label=loss[:-4])
-            plt.legend()
-        plt.xlabel('Epoch')
-        plt.ylabel(labelY[idx])
-    plt.show()
-    if not os.path.isdir('log'):
-        os.mkdir('log')
-    plt.savefig(f'./log/criteria.png')
-    print('Losses comparison result saved!')
-
-
-def compare_quota(train_loss, test_loss, train_accuracy, test_accuracy, figsize=(16, 8), row=2, col=2, **kwargs):
+def compare_quota(train_loss, test_loss, train_accuracy, test_accuracy, figsize=(24, 12), row=2, col=2, **kwargs):
     if 'losses' in kwargs:
         quota = kwargs['losses']
         name = 'losses'
@@ -71,19 +54,20 @@ def compare_quota(train_loss, test_loss, train_accuracy, test_accuracy, figsize=
         raise ValueError('No quota to compare!')
     plt.figure(figsize=figsize)
     axisY = [train_loss, test_loss, train_accuracy, test_accuracy]
-    labelY = [ds + la for la in ('Loss', 'Accuracy') for ds in ('Train', 'Test')]
+    labelY = [ds + la for la in ('Loss', 'Accuracy') for ds in ('Train ', 'Test ')]
     for idx in range(row * col):
         plt.subplot(row, col, idx + 1)
         for q, y in zip(quota, axisY[idx]):
-            plt.plot(y, label=q[:-4] if name == 'loss' else q)
+            plt.plot(y, label=q[:-4] if name == 'losses' else q)
             plt.legend()
         plt.xlabel('Epoch')
         plt.ylabel(labelY[idx])
-    plt.show()
     if not os.path.isdir('log'):
         os.mkdir('log')
     plt.savefig(f'./log/{name}.png')
+    plt.show()
     print(f'Done ----- {name} comparison result saved!')
+    plt.close()
 
 
 def log_info(epoch, max_epoch, train_loss, train_acc, test_loss, test_acc, best_acc, lr):
@@ -97,8 +81,8 @@ def log_info(epoch, max_epoch, train_loss, train_acc, test_loss, test_acc, best_
 
 def log_info_quota(epoch, max_epoch, train_loss, train_acc, test_loss, test_acc, quota):
     print(line := "=" * 75)
-    for loss, train_l, train_a, test_l, test_a in zip(quota, train_loss, train_acc, test_loss, test_acc):
-        print(f"Epoch: {epoch + 1} / {max_epoch} under {quota}")
+    for q, train_l, train_a, test_l, test_a in zip(quota, train_loss, train_acc, test_loss, test_acc):
+        print(f"Epoch: {epoch + 1} / {max_epoch} under {q}")
         print(newline := "-" * 75)
         print(f"Train Loss: {train_l:.4f} | Train Acc: {train_a:.2f}%")
         print(f"Test  Loss: {test_l:.4f} | Test  Acc: {test_a:.2f}%")

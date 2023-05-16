@@ -89,6 +89,25 @@ def optimizer(optimizer_name, net, lr, **kwargs):
     return optimizer[optimizer_name]
 
 
+def activation(activation_name):
+    activation = {
+        'ReLU': nn.ReLU(),
+        'ReLU6': nn.ReLU6(),
+        'ELU': nn.ELU(),
+        'SELU': nn.SELU(),
+        'LeakyReLU': nn.LeakyReLU(),
+        'PReLU': nn.PReLU(),
+        'Hardtanh': nn.Hardtanh(),
+        'Sigmoid': nn.Sigmoid(),
+        'Tanh': nn.Tanh(),
+        'Softmax': nn.Softmax(),
+        'LogSoftmax': nn.LogSoftmax(),
+        'Softplus': nn.Softplus(),
+    }
+    print(f"==========> Activation {activation_name} selected. <==========")
+    return activation[activation_name]
+
+
 def scheduler(scheduler_name, optimizer, **kwargs):
     """
     :param scheduler_name:

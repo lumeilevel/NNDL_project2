@@ -75,7 +75,8 @@ def main(config):
     optimizers = [utils.optimizer('Adam', net, args.lr, **config['optimizer']) for net in nets]
     schedulers = [utils.scheduler('ReduceLROnPlateau', optimizer, **config['scheduler']) for optimizer in optimizers]
 
-    train_loss, train_acc, test_loss, test_acc = (__ := [[] for _ in config['losses']]), __, __, __
+    train_loss, train_acc, test_loss, test_acc = [[] for _ in config['losses']], [[] for _ in config['losses']], \
+                                                 [[] for _ in config['losses']], [[] for _ in config['losses']]
     for epoch in range(args.epoch):
         train_l, train_a = train(nets, train_loader, args.batch_size, device, epoch, criteria, optimizers)
         test_l, test_a = test(nets, test_loader, config['test_batch_size'], device, epoch, criteria)

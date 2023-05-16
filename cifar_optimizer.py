@@ -42,7 +42,7 @@ def train(nets, train_loader, train_batch_size, device, epoch, criterion, optimi
     return epoch_loss, epoch_acc
 
 
-def test(nets, test_loader, test_batch_size, device, epoch, criteria):
+def test(nets, test_loader, test_batch_size, device, epoch, criterion):
     for net in nets:
         net.eval()
     test_loss, correct, total = [0] * len(nets), [0] * len(nets), 0
@@ -53,7 +53,7 @@ def test(nets, test_loader, test_batch_size, device, epoch, criteria):
             targets_onehot = F.one_hot(targets, num_classes=10).to(torch.float)
             total += targets.size(0)
 
-            for i, (net, criterion) in enumerate(zip(nets, criteria)):
+            for i, net in enumerate(nets):
                 outputs = net(inputs)
                 loss = criterion(outputs, targets_onehot)
 
@@ -77,7 +77,10 @@ def main(config):
                   for optimizer in config['optimizers'][1:]]
     schedulers = [utils.scheduler('ReduceLROnPlateau', optimizer, **config['scheduler']) for optimizer in optimizers]
 
-    train_loss, train_acc, test_loss, test_acc = (__ := [[] for _ in config['optimizers']]), __, __, __
+    train_loss, train_acc, test_loss, test_acc = [[] for _ in config['optimizers']], \
+                                                 [[] for _ in config['optimizers']], \
+                                                 [[] for _ in config['optimizers']], \
+                                                 [[] for _ in config['optimizers']]
     for epoch in range(args.epoch):
         train_l, train_a = train(nets, train_loader, args.batch_size, device, epoch, criterion, optimizers)
         test_l, test_a = test(nets, test_loader, config['test_batch_size'], device, epoch, criterion)

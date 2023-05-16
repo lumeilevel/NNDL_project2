@@ -63,8 +63,8 @@ optimizers:
     - SGD
     - RMSprop
     - Adadelta
-    - Adagrad
+#    - Adagrad
 #    - Adamax
-    - ASGD
+#    - ASGD
 #    - Rprop
 #    - LBFGS

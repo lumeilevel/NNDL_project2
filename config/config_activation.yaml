@@ -49,10 +49,10 @@ scheduler:
 #  - ship
 #  - truck
 
-losses:
+activations:
   - CrossEntropyLoss
   - MSELoss
   - BCEWithLogitsLoss
-#  - HuberLoss
-#  - SmoothL1Loss
+  - HuberLoss
+  - SmoothL1Loss
   - MultiLabelSoftMarginLoss
