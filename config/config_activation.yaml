@@ -50,9 +50,13 @@ scheduler:
 #  - truck
 
 activations:
-  - CrossEntropyLoss
-  - MSELoss
-  - BCEWithLogitsLoss
-  - HuberLoss
-  - SmoothL1Loss
-  - MultiLabelSoftMarginLoss
+  - ReLU
+  - ReLU6
+  - LeakyReLU
+  - ELU
+#  - SELU
+#  - Sigmoid
+#  - Tanh
+#  - Hardtanh
+#  - Softmax
+#  - Softplus

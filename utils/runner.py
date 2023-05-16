@@ -36,8 +36,11 @@ def baseline(models, device):
     return net
 
 
-def net_list(names, models, device):
-    nets = [models.resNet18() for _ in names]
+def net_list(names, models, device, activation_list=None):
+    if activation_list:
+        nets = [models.resNet18(activation=activation(activation_name)) for activation_name in activation_list]
+    else:
+        nets = [models.resNet18() for _ in names]
     if device == 'cuda':
         nets = [nn.DataParallel(net) for net in nets]
     for net in nets:

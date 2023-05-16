@@ -99,7 +99,7 @@ def main(config):
 if __name__ == '__main__':
     with open('config/config_optimizer.yaml', 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
-    parser = argparse.ArgumentParser(description="Compare loss function on CIFAR-10")
+    parser = argparse.ArgumentParser(description="Compare optimizing function on CIFAR-10")
     parser.add_argument('--batch-size', '-b', type=int, default=config['batch_size'], help='Training batch size')
     parser.add_argument('--lr', default=config['lr'], type=float, help="Learning rate")
     parser.add_argument('--epoch', '-e', default=config['epoch'], type=int, help="Max training epochs")

@@ -47,9 +47,9 @@ def compare_quota(train_loss, test_loss, train_accuracy, test_accuracy, figsize=
     elif 'optimizers' in kwargs:
         quota = kwargs['optimizers']
         name = 'optimizers'
-    elif 'criteria' in kwargs:
-        quota = kwargs['criteria']
-        name = 'criteria'
+    elif 'activations' in kwargs:
+        quota = kwargs['activations']
+        name = 'activations'
     else:
         raise ValueError('No quota to compare!')
     plt.figure(figsize=figsize)
