@@ -72,9 +72,9 @@ def main(config):
     net = utils.baseline(model, device)
     nets = utils.net_list(config['optimizers'], model, device)
     criterion = utils.loss('CrossEntropyLoss')
-    optimizers = [utils.optimizer('Adam', net, config['lr_adam'], **config['optimizer'])] + \
+    optimizers = [utils.optimizer('Adam', nets[0], config['lr_adam'], **config['optimizer'])] + \
                  [utils.optimizer(optimizer, net, args.lr, **config['optimizer'])
-                  for optimizer in config['optimizers'][1:]]
+                  for optimizer, net in zip(config['optimizers'][1:], nets[1:])]
     schedulers = [utils.scheduler('ReduceLROnPlateau', optimizer, **config['scheduler']) for optimizer in optimizers]
 
     train_loss, train_acc, test_loss, test_acc = [[] for _ in config['optimizers']], \

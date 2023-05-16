@@ -101,6 +101,7 @@ def main(config):
 
         utils.log_info(epoch, max_epoch, train_l, train_a, test_l, test_a, best_acc[0], lr)
     utils.plot_history(train_loss, test_loss, train_acc, test_acc, lr_schedule, args.model)
+    print(f"#Parameters in {args.model}: {sum(x.numel() for x in net.parameters())}")
 
 
 if __name__ == '__main__':
@@ -108,12 +109,10 @@ if __name__ == '__main__':
         config = yaml.load(f, Loader=yaml.FullLoader)
     parser = argparse.ArgumentParser(description="Train a network on CIFAR-10 by PyTorch")
     parser.add_argument(
-        '--model', '-m',
-        default='resNet18',
-        type=str,
+        '--model', '-m', default='resNet18', type=str,
         help="resNet18, resNet34, resNet50, resNet101, resNet152, resNeXt50_32x4d, resNeXt101_32x8d, "
-             "wide_resNet50_2, wide_resNet101_2, PreActResNet18, ResNeXt29_32x4d, ResNeXt29_2x64d, \
-            WideResNet28x10, DenseNet121, DPN26, DLA",
+             "wide_resNet50_2, wide_resNet101_2, denseNet121, denseNet169, denseNet201, denseNet161, "
+             "denseNet_cifar, ",
     )
     parser.add_argument('--batch-size', '-b', type=int, default=config['batch_size'], help='Training batch size')
     parser.add_argument('--lr', default=config['lr'], type=float, help="Learning rate")

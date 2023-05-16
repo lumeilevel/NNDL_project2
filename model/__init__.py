@@ -16,3 +16,18 @@ from .resnet import (
     wide_resNet50_2,
     wide_resNet101_2,
 )
+
+from .densenet import (
+    denseNet121,
+    denseNet169,
+    denseNet201,
+    denseNet161,
+    denseNet_cifar,
+)
+
+from .dla import DLA
+from .dpn import (
+    DPN,
+    dpn26,
+    dpn92,
+)
