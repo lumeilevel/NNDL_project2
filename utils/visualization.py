@@ -6,7 +6,7 @@
 # @Project  : lab
 
 import os
-
+import numpy as np
 from matplotlib import pyplot as plt
 
 
@@ -88,3 +88,48 @@ def log_info_quota(epoch, max_epoch, train_loss, train_acc, test_loss, test_acc,
         print(f"Test  Loss: {test_l:.4f} | Test  Acc: {test_a:.2f}%")
         print(newline)
     print(line)
+
+
+def plot_landscape(
+    vgg_max, vgg_min, vggbn_max, vggbn_min, xlabel, ylabel, title, interval=40
+):
+    steps = np.arange(0, len(vgg_max), interval)
+    vgg_max = vgg_max[steps]
+    vgg_min = vgg_min[steps]
+    vggbn_max = vggbn_max[steps]
+    vggbn_min = vggbn_min[steps]
+
+    plt.style.use('ggplot')
+    plt.figure(figsize=(12, 9))
+    plt.plot(steps, vgg_max, color='mediumturquoise', alpha=0.5)
+    plt.plot(steps, vgg_min, color='mediumturquoise', alpha=0.5)
+    plt.fill_between(
+        steps, vgg_min, vgg_max, color='mediumturquoise', alpha=0.5, label='VGG'
+    )
+    plt.plot(steps, vggbn_max, color='coral', alpha=0.5)
+    plt.plot(steps, vggbn_min, color='coral', alpha=0.5)
+    plt.fill_between(
+        steps, vggbn_min, vggbn_max, color='coral', alpha=0.5, label='VGG + BN'
+    )
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.legend()
+    plt.title(title)
+    plt.savefig(os.path.join('./log', f'{ylabel.lower()}-landscape.png'))
+
+
+def plot_beta_landscape(vgg_betas, vggbn_betas):
+    vgg_max = np.max(vgg_betas, axis=0)
+    vggbn_max = np.max(vggbn_betas, axis=0)
+
+    steps = np.arange(0, len(vgg_max), 40)
+    vgg_max = vgg_max[steps]
+    vggbn_max = vggbn_max[steps]
+    plt.figure(figsize=(12, 9))
+    plt.plot(steps, vgg_max, color='mediumturquoise', label='VGG')
+    plt.plot(steps, vggbn_max, color='coral', label='VGG + BN')
+    plt.xlabel('Step')
+    plt.ylabel('Beta')
+    plt.legend()
+    plt.title('Beta Landscape')
+    plt.savefig(os.path.join('./log', 'beta-smooth.png'))

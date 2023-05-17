@@ -1,0 +1,57 @@
+seed: 1
+batch_size: 128
+test_batch_size: 256
+epoch: 100
+lr: 0.1
+hidden: 0
+dropout: 0
+num_workers: 2
+size: 32
+padding: 4
+half_size: 8
+mean: (0.4914, 0.4822, 0.4465)
+std: (0.2470, 0.2435, 0.2616)
+
+max_epochs: 20
+lrs:
+  - 0.005
+  - 0.001
+  - 0.0005
+  - 0.0001
+
+optimizer:
+  momentum: 0.9
+  weight_decay: 0.0005
+
+scheduler:
+  gamma:
+    StepLR: 0.5
+    MultiStepLR: 0.1
+    ExponentialLR: 0.9
+  milestones: [10, 20, 30]
+  mode: min
+  factor: 0.5
+  patience: 5
+  cooldown: 5
+  T_0: 10
+  T_mult: 1
+  T_max: 5
+  eta_min: 0.0001
+  steps_per_epoch: 10
+  epochs: 10
+  step_size: 1
+  min_lr: 0.000001
+  max_lr: 0.1
+  base_lr: 0.001
+
+classes:
+  - plane
+  - car
+  - bird
+  - cat
+  - deer
+  - dog
+  - frog
+  - horse
+  - ship
+  - truck

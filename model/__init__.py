@@ -26,8 +26,14 @@ from .densenet import (
 )
 
 from .dla import DLA
+
 from .dpn import (
     DPN,
     dpn26,
     dpn92,
+)
+
+from .vgg import (
+    VGG_A,
+    VGG_A_BatchNorm,
 )

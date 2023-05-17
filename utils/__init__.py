@@ -8,6 +8,7 @@
 from .preprocess import (
     reproduce,
     get_data_loader,
+    get_cifar_loader,
 )
 
 from .runner import (
@@ -24,4 +25,6 @@ from .visualization import (
     log_info,
     log_info_quota,
     compare_quota,
+    plot_landscape,
+    plot_beta_landscape,
 )
