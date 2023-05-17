@@ -50,14 +50,6 @@ scheduler:
 #  - ship
 #  - truck
 
-#losses:
-#  - CrossEntropyLoss
-#  - MSELoss
-#  - BCEWithLogitsLoss
-#  - HuberLoss
-#  - SmoothL1Loss
-#  - MultiLabelSoftMarginLoss
-
 optimizers:
     - Adam
     - SGD

@@ -24,7 +24,7 @@ class BasicBlock(nn.Module):
 
     expansion = 1
 
-    def __init__(self, inplanes, planes, activation=F.relu, stride=1,
+    def __init__(self, inplanes, planes, activation=F.leaky_relu, stride=1,
                  groups=1, base_width=64, dilation=1, norm_layer=None):
         super(BasicBlock, self).__init__()
         if norm_layer is None:
@@ -69,7 +69,7 @@ class Bottleneck(nn.Module):
 
     expansion = 4
 
-    def __init__(self, inplanes, planes, activation=F.relu, stride=1,
+    def __init__(self, inplanes, planes, activation=F.leaky_relu, stride=1,
                  groups=1, base_width=64, dilation=1, norm_layer=None):
         super(Bottleneck, self).__init__()
         if norm_layer is None:
@@ -95,7 +95,7 @@ class Bottleneck(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, arch, block, num_blocks, activation=F.relu, num_classes=10,
+    def __init__(self, arch, block, num_blocks, activation=F.leaky_relu, num_classes=10,
                  groups=1, width_per_group=64, hidden_dims=(), dropout_p=0.0):
         super(ResNet, self).__init__()
         self.in_planes = 64

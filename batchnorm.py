@@ -10,7 +10,7 @@ import argparse
 import numpy as np
 import torch
 import yaml
-from tqdm import trange, tqdm
+from tqdm import tqdm
 
 import model
 import utils
@@ -24,7 +24,7 @@ def validate(model, val_loader, device):
     for data, target in val_loader:
         data, target = data.to(device), target.to(device)
         output = model(data)
-        _, predicted = torch.max(output.data, 1)
+        predicted = torch.max(output.data, 1)[0]
         total += target.size(0)
         correct += (predicted == target).sum().item()
 
@@ -44,7 +44,7 @@ def train(model, device, optimizer, criterion, train_loader, val_loader, schedul
 
     model.to(device)
 
-    for epoch in trange(num_epochs):
+    for epoch in num_epochs:
         # Training
         model.train()
 
@@ -58,7 +58,7 @@ def train(model, device, optimizer, criterion, train_loader, val_loader, schedul
             optimizer.step()
 
             # Accuracy
-            _, predicted = torch.max(output.data, 1)
+            predicted = torch.max(output.data, 1)[0]
             total += target.size(0)
             correct += (predicted == target).sum().item()
 
@@ -97,7 +97,7 @@ def explore_lr(name, lrs, device, criterion, train_loader, valid_loader, max_epo
             print("======================VGG-A======================")
         else:
             net = model.VGG_A_BatchNorm()
-            print("=================VGG-A-BarchNorm=================")
+            print("=================VGG-A-BatchNorm=================")
         print(f"Learning rate: {lr}")
         optimizer = torch.optim.Adam(net.parameters(), lr=lr)
         train_acc, valid_acc, losses, dists, betas = train(
@@ -123,9 +123,9 @@ def main(config):
     criterion = utils.loss()
 
     explore_lr('vgg', config['lrs'], device, criterion, train_loader, val_loader,
-               config['max_epochs'], vgg_train, vgg_val, vgg_losses, vgg_dists, vgg_betas)
+               args.max_epochs, vgg_train, vgg_val, vgg_losses, vgg_dists, vgg_betas)
     explore_lr('vggbn', config['lrs'], device, criterion, train_loader, val_loader,
-               config['max_epochs'], vggbn_train, vggbn_val, vggbn_losses, vggbn_dists, vggbn_betas)
+               args.max_epochs, vggbn_train, vggbn_val, vggbn_losses, vggbn_dists, vggbn_betas)
 
     vgg_losses, vggbn_losses = np.array(vgg_losses), np.array(vggbn_losses)
     vgg_dists, vggbn_dists = np.array(vgg_dists), np.array(vggbn_dists)
@@ -149,5 +149,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Train a network on CIFAR-10 by PyTorch")
     parser.add_argument('--batch-size', '-b', type=int, default=config['batch_size'], help='Training batch size')
     parser.add_argument('--seed', '-s', default=config['seed'], type=int, help="Set random seed")
+    parser.add_argument('--max_epochs', '-e', type=int, default=config['max_epochs'], help='Max training epochs')
     args = parser.parse_args()
     main(config)

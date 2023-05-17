@@ -1,7 +1,10 @@
 # Aiming for this project
 checkpoints/
 references/
-main.ipynb
+data/
+data/cifar-10-batches-py/
+root/
+*.ipynb
 *.pdf
 
 # Byte-compiled / optimized / DLL files
