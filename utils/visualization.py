@@ -75,7 +75,7 @@ def log_info(epoch, max_epoch, train_loss, train_acc, test_loss, test_acc, best_
     print(f"Epoch: {epoch + 1} / {max_epoch}")
     print(f"Learning Rate: {lr:.6f}")
     print(f"Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}%")
-    print(f"Test Loss: {test_loss:.4f} | Test Acc: {test_acc:.2f}% | Best Acc: {best_acc:.2f}%")
+    print(f"Test  Loss: {test_loss:.4f} | Test  Acc: {test_acc:.2f}% | Best Acc: {best_acc:.2f}%")
     print(line)
 
 
