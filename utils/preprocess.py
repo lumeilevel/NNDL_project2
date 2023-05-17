@@ -35,8 +35,8 @@ def reproduce(seed):
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
-    if not os.path.isdir('.log/'):
-        os.mkdir('.log/')
+    if not os.path.isdir('./log'):
+        os.mkdir('./log')
     if not os.path.isdir('./checkpoints'):
         os.mkdir('./checkpoints')
     return 'cuda' if torch.cuda.is_available() else 'cpu'
