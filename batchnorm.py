@@ -5,14 +5,14 @@
 # @File     : batchnorm.py
 # @Project  : lab
 
-import os
+import argparse
+
 import numpy as np
 import torch
-from torch import nn
+import yaml
+
 import model
 import utils
-import yaml
-import argparse
 
 
 def validate(model, val_loader, device):
@@ -126,8 +126,7 @@ def main(config):
                config['max_epochs'], vgg_train, vgg_val, vgg_losses, vgg_dists, vgg_betas)
     explore_lr('vggbn', config['lrs'], criterion, train_loader, val_loader,
                config['max_epochs'], vggbn_train, vggbn_val, vggbn_losses, vggbn_dists, vggbn_betas)
-    vgg_train, vggbn_train = np.array(vgg_train), np.array(vggbn_train)
-    vgg_val, vggbn_val = np.array(vgg_val), np.array(vggbn_val)
+
     vgg_losses, vggbn_losses = np.array(vgg_losses), np.array(vggbn_losses)
     vgg_dists, vggbn_dists = np.array(vgg_dists), np.array(vggbn_dists)
     vgg_betas, vggbn_betas = np.array(vgg_betas), np.array(vggbn_betas)

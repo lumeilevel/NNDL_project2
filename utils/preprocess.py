@@ -8,11 +8,11 @@
 import os
 import random
 
+import matplotlib as mpl
 import numpy as np
 import torch
 import torchvision
 import torchvision.transforms as T
-import matplotlib as mpl
 from torch.utils.data import DataLoader, Dataset
 
 
@@ -35,6 +35,10 @@ def reproduce(seed):
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
+    if not os.path.isdir('.log/'):
+        os.mkdir('.log/')
+    if not os.path.isdir('./checkpoints'):
+        os.mkdir('./checkpoints')
     return 'cuda' if torch.cuda.is_available() else 'cpu'
 
 
