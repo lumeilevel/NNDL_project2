@@ -71,7 +71,7 @@ def train(model, device, optimizer, criterion, train_loader, val_loader, schedul
                 dists.append(grad_dist)
             if weight_pre is not None:
                 weight_dist = torch.dist(weight, weight_pre).item()
-                beta = grad_dist / weight_dist
+                beta = grad_dist / (weight_dist + 1e-8)
                 betas.append(beta)
             grad_pre = grad
             weight_pre = weight
