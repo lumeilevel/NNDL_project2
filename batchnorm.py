@@ -10,6 +10,7 @@ import argparse
 import numpy as np
 import torch
 import yaml
+from tqdm import trange, tqdm
 
 import model
 import utils
@@ -43,13 +44,12 @@ def train(model, device, optimizer, criterion, train_loader, val_loader, schedul
 
     model.to(device)
 
-    for epoch in range(num_epochs):
-        print(f'Epoch {epoch + 1}/{num_epochs}')
+    for epoch in trange(num_epochs):
         # Training
         model.train()
 
         total, correct = 0, 0
-        for data, target in train_loader:
+        for data, target in tqdm(train_loader, desc=f'Epoch {epoch + 1}/{num_epochs} '):
             data, target = data.to(device), target.to(device)
             optimizer.zero_grad()
             output = model(data)
@@ -90,7 +90,7 @@ def train(model, device, optimizer, criterion, train_loader, val_loader, schedul
     return train_accuracies, val_accuracies, losses, dists, betas
 
 
-def explore_lr(name, lrs, criterion, train_loader, valid_loader, max_epochs, train, valid, loss, dist, beta):
+def explore_lr(name, lrs, device, criterion, train_loader, valid_loader, max_epochs, training, validation, loss, dist, beta):
     for lr in lrs:
         if name == 'vgg':
             net = model.VGG_A()
@@ -101,10 +101,10 @@ def explore_lr(name, lrs, criterion, train_loader, valid_loader, max_epochs, tra
         print(f"Learning rate: {lr}")
         optimizer = torch.optim.Adam(net.parameters(), lr=lr)
         train_acc, valid_acc, losses, dists, betas = train(
-            net, optimizer, criterion, train_loader, valid_loader, num_epochs=max_epochs
+            net, device, optimizer, criterion, train_loader, valid_loader, None, max_epochs
         )
-        train.append(train_acc)
-        valid.append(valid_acc)
+        training.append(train_acc)
+        validation.append(valid_acc)
         loss.append(losses)
         dist.append(dists)
         beta.append(betas)
@@ -122,9 +122,9 @@ def main(config):
     vggbn_train, vggbn_val, vggbn_losses, vggbn_dists, vggbn_betas = [], [], [], [], []
     criterion = utils.loss()
 
-    explore_lr('vgg', config['lrs'], criterion, train_loader, val_loader,
+    explore_lr('vgg', config['lrs'], device, criterion, train_loader, val_loader,
                config['max_epochs'], vgg_train, vgg_val, vgg_losses, vgg_dists, vgg_betas)
-    explore_lr('vggbn', config['lrs'], criterion, train_loader, val_loader,
+    explore_lr('vggbn', config['lrs'], device, criterion, train_loader, val_loader,
                config['max_epochs'], vggbn_train, vggbn_val, vggbn_losses, vggbn_dists, vggbn_betas)
 
     vgg_losses, vggbn_losses = np.array(vgg_losses), np.array(vggbn_losses)
