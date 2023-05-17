@@ -4,6 +4,8 @@ references/
 data/
 data/cifar-10-batches-py/
 root/
+log/distance-landscape.png
+log/beta-smooth.png
 *.ipynb
 *.pdf
 
