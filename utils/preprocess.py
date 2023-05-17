@@ -48,7 +48,7 @@ def get_data_loader(cutout, batch_size, config):
     else:
         mean, std = config['mean'], config['std']
     if cutout:
-        from augmentation import Cutout
+        from .augmentation import Cutout
         transform_train = T.Compose([
             T.RandomCrop(config['size'], padding=config['padding']),
             T.RandomHorizontalFlip(),
