@@ -44,7 +44,7 @@ def train(model, device, optimizer, criterion, train_loader, val_loader, schedul
 
     model.to(device)
 
-    for epoch in num_epochs:
+    for epoch in range(num_epochs):
         # Training
         model.train()
 
