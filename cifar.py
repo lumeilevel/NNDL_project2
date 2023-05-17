@@ -112,7 +112,7 @@ if __name__ == '__main__':
         '--model', '-m', default='resNet18', type=str,
         help="resNet18, resNet34, resNet50, resNet101, resNet152, resNeXt50_32x4d, resNeXt101_32x8d, "
              "wide_resNet50_2, wide_resNet101_2, denseNet121, denseNet169, denseNet201, denseNet161, "
-             "denseNet_cifar, ",
+             "denseNet_cifar, DLA, dpn26, dpn92",
     )
     parser.add_argument('--batch-size', '-b', type=int, default=config['batch_size'], help='Training batch size')
     parser.add_argument('--lr', default=config['lr'], type=float, help="Learning rate")

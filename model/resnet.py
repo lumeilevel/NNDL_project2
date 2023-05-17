@@ -49,7 +49,7 @@ class BasicBlock(nn.Module):
                     stride=stride,
                     bias=False,
                 ),
-                nn.BatchNorm2d(self.expansion * planes),
+                norm_layer(self.expansion * planes),
             )
 
     def forward(self, x):
@@ -84,6 +84,18 @@ class Bottleneck(nn.Module):
         self.bn3 = norm_layer(planes * self.expansion)
         self.activation = activation
         self.stride = stride
+        self.shortcut = nn.Sequential()
+        if stride != 1 or inplanes != self.expansion * planes:
+            self.shortcut = nn.Sequential(
+                nn.Conv2d(
+                    inplanes,
+                    self.expansion * planes,
+                    kernel_size=1,
+                    stride=stride,
+                    bias=False,
+                ),
+                norm_layer(self.expansion * planes),
+            )
 
     def forward(self, x):
         out = self.activation(self.bn1(self.conv1(x)))
