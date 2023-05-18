@@ -7,7 +7,7 @@ root/
 log/distance-landscape.png
 log/beta-smooth.png
 *.ipynb
-*.pdf
+#*.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
