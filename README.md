@@ -10,9 +10,9 @@ The models are trained under a max epoch of 100.
 |      Model      | #Parameters | Train Accuracy (%) | Test Accuracy (%) |
 | :-------------: | :---------: | :----------------: | :---------------: |
 |    ResNet18     |  11173962   |       95.32        |       92.06       |
-| ResNeXt50_32x4d |             |                    |                   |
-|      DPN26      |             |                    |                   |
-|       DLA       |             |                    |                   |
+| ResNeXt50_32x4d |  22992714   |       98.70        |       94.85       |
+|      DPN26      |  11574842   |       97.07        |       93.26       |
+|       DLA       |  16291386   |       98.22        |       94.65       |
 |   DenseNet121   |   6956298   |       99.98        |       92.94       |
 
 ### Best Model
